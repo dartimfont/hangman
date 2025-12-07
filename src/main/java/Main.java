@@ -1,8 +1,11 @@
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -12,6 +15,7 @@ public class Main {
     public static final int QUIT_GAME = 2;
 
     public static Scanner scanner = new Scanner(System.in);
+    public static Random random = new Random();
 
     public static void main(String[] args) {
         mainMenu();
@@ -38,6 +42,7 @@ public class Main {
     public static void printMenu() {
         System.out.println("1. Начать игру");
         System.out.println("2. Выйти из игры");
+        System.out.print("Выбор: ");
     }
 
     public static int inputForMenuOption() {
@@ -63,7 +68,15 @@ public class Main {
     }
 
     public static String chooseRandomWord() {
-        return "Машина".toLowerCase();
+        String result = "";
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("./src/main/resources/words.txt"))) {
+            String[] pullWords = bufferedReader.readLine().split(" ");
+            int randomWord = random.nextInt(0, pullWords.length);
+            result = pullWords[randomWord];
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return result.toLowerCase();
     }
 
     public static void gameLoop(String randomWord) {
@@ -170,9 +183,9 @@ public class Main {
             partsBodyBegin[i] = partsBodyEnd[i];
         }
 
-        String head = "  " + partsBodyBegin[0];
+        String head = "  " + partsBodyBegin[0] + " ";
         String arms = " " + partsBodyBegin[2] + partsBodyBegin[1] + partsBodyBegin[3];
-        String tail = "  " + partsBodyBegin[1];
+        String tail = "  " + partsBodyBegin[1] + " ";
         String legs = " " + partsBodyBegin[4] + " " + partsBodyBegin[5];
 
         String errorMessage = "";
@@ -181,13 +194,13 @@ public class Main {
         }
 
         System.out.printf("""
-                    |-----|
-                  %s     |     Слово: %s
-                  %s    |     Ошибки (%d): %s
-                  %s     |     Буква: %s
-                  %s    |
-                          |
-                |---------|
+                    |-------|
+                  %s      |     Слово: %s
+                  %s      |     Ошибки (%d): %s
+                  %s      |     Буква: %s
+                  %s      |
+                            |
+                |-----------|
                 
                 """, head, wordForOutput, arms, countError, errorMessage, tail, letter, legs);
     }
